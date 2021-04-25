@@ -52,7 +52,10 @@ receive `args` from the topmost invocation of `MARKUP`.
 
 ## The rest of the document
 
-**TODO**
+**TODO** lol
+
+If you want to get a sense of what this thing does, go look at [the
+Ruby version](https://github.com/doriantaylor/rb-xml-mixup).
 
 ## Copyright & License
 
