@@ -1,8 +1,21 @@
 # markup-mixup: A Sensible, Terse HTML/XML Markup Generator
 
 ```html
-<script type="text/javascript src="markup-mixup.js"></script>
+<script type="text/javascript" src="markup-mixup.js"></script>
+<script type="text/javascript">
+  // put something in the body
+  let lol = MARKUP({ parent: document.body, spec: 'lol' });
 
+  // lol is, unsurprisingly, the text node that says lol
+  let hurr = MARKUP({ after: lol, spec: { '#strong': 'smelling' } });
+
+  // now we can put something in between these two
+  let durr = MARKUP({ before: hurr,
+    spec: { '#a': ['duhh ', { '#em': 'durr' }], href: '/derp' } });
+
+  // aaand finally we can cover up our mistakes
+  MARKUP({ replace: lol, spec: { '#h1': 'OBTRUSIVE MESSAGE' } });
+</script>
 ```
 
 ## Yet another markup generator?
