@@ -24,13 +24,14 @@
 Many years ago, [I](https://doriantaylor.com/) wrote a Perl module
 called
 [Role::Markup::XML](https://metacpan.org/pod/Role::Markup::XML). I did
-this because I had a lot of XML to generate, and was dissatisfied with
-what was currently on offer. Then I wrote [a version for
-Ruby](https://www.rubydoc.info/gems/xml-mixup/). Now I have a lot of
-XML to generate using JavaScript. As with the others, here are the key
-behaviours:
+this because I had a lot of markup to generate, I sure as heck wasn't
+going to use a bare DOM API, and I was dissatisfied with the terse
+generators currently on offer. Then [I solved the same problem for
+Ruby](https://www.rubydoc.info/gems/xml-mixup/). _Now_ I have a lot of
+X/HTML to generate using JavaScript, and I have apparenetly cultivated
+a habit. As with the other two, here are the key behaviours:
 
-### Write markup like you're writing code
+### Write markup like you're writing data structures, because you are
 
 You sketch out the markup using ordinary `Object`s and `Array`s, which
 you can subsequently address and manipulate with ordinary subscript
