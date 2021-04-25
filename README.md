@@ -6,11 +6,12 @@
   // put something in the body
   let lol = MARKUP({ parent: document.body, spec: 'lol' });
 
-  // lol is, unsurprisingly, the text node that says lol
+  // lol is, unsurprisingly, the text node that says 'lol'
   let hurr = MARKUP({ after: lol, spec: { '#strong': 'smelling' } });
 
-  // now we can put something in between these two
-  let durr = MARKUP({ before: hurr,
+  // now we can put something in between these two; note `hurr`
+  // is actually the text node 'smelling', so we need its parent
+  let durr = MARKUP({ before: hurr.parentNode,
     spec: { '#a': ['duhh ', { '#em': 'durr' }], href: '/derp' } });
 
   // aaand finally we can cover up our mistakes

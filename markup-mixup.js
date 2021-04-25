@@ -214,12 +214,13 @@ const MARKUP = (function () {
         else {
             // 'parent' is actually an object containing named params
             Object.keys(ADJACENT).forEach(function (k) {
-                if (parent[k]) {
+                if (k in parent) {
                     if (adj) throw 'Cannot bind to ' +
                         k + ': ' + adj + ' is already present';
                     if (!(parent[k] instanceof Node))
                         throw parent[k].toString() + ' is not a node';
-                    if (!isElemOrDoc(parent[k]))
+                    if (!isElemOrDoc(
+                        k === 'parent' ? parent[k] : parent[k].parentNode))
                         throw k + ' must be a document or element, not ' +
                         parent[k].toString();
                     adj = k;
