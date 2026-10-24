@@ -1,23 +1,26 @@
 # markup-mixup: A Sensible, Terse HTML/XML Markup Generator
 
-```html
-<script type="text/javascript" src="markup-mixup.js"></script>
-<script type="text/javascript">
-  // put something in the body
-  let lol = MARKUP({ parent: document.body, spec: 'lol' });
+```js
+// as an ES module (browser or Node with a DOM implementation)
+import MARKUP from 'markup-mixup';
 
-  // lol is, unsurprisingly, the text node that says 'lol'
-  let hurr = MARKUP({ after: lol, spec: { '#strong': 'smelling' } });
+// put something in the body
+let lol = MARKUP({ parent: document.body, spec: 'lol' });
 
-  // now we can put something in between these two; note `hurr`
-  // is actually the text node 'smelling', so we need its parent
-  let durr = MARKUP({ before: hurr.parentNode,
-    spec: { '#a': ['duhh ', { '#em': 'durr' }], href: '/derp' } });
+// lol is, unsurprisingly, the text node that says 'lol'
+let hurr = MARKUP({ after: lol, spec: { '#strong': 'smelling' } });
 
-  // aaand finally we can cover up our mistakes
-  MARKUP({ replace: lol, spec: { '#h1': 'OBTRUSIVE MESSAGE' } });
-</script>
+// now we can put something in between these two; note `hurr`
+// is actually the text node 'smelling', so we need its parent
+let durr = MARKUP({ before: hurr.parentNode,
+  spec: { '#a': ['duhh ', { '#em': 'durr' }], href: '/derp' } });
+
+// aaand finally we can cover up our mistakes
+MARKUP({ replace: lol, spec: { '#h1': 'OBTRUSIVE MESSAGE' } });
 ```
+
+Note that `MARKUP` returns the last node in document order, so
+incremental markup surgery can pick up where the last call left off.
 
 ## Yet another markup generator?
 
@@ -64,6 +67,21 @@ it generates, to make it easier to break up operations.
 If your markup only varies parametrically, you can put a callback
 function anywhere a node or attribute would go. This function will
 receive `args` from the topmost invocation of `MARKUP`.
+
+### Customized built-in elements
+
+An `is=` attribute in an element spec is detected and passed along to
+`document.createElement(tag, { is: … })` (or `createElementNS`),
+so customized built-in elements — e.g. `<button
+is="fancy-button">` — are created with the correct options for
+upgrading, while still being serialized with the ordinary `is`
+attribute.
+
+```js
+// produces <button is="fancy-button">go</button>, upgraded
+MARKUP({ parent: document.body, spec: {
+  '#button': 'go', is: 'fancy-button' } });
+```
 
 ## The rest of the document
 
