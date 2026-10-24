@@ -125,8 +125,11 @@ const MARKUP = (function () {
     const flatten = function (obj, args, kv) {
         if (typeof kv !== 'string') kv = ': ';
         if (obj === null || typeof obj === 'undefined') return undefined;
+        // functions have no own keys, so this check has to happen
+        // before the empty-object check below or callbacks will
+        // never fire
+        if (typeof obj === 'function') return flatten(obj(args), args);
         if (isAtom(obj) || Object.keys(obj).length === 0) return obj.toString();
-        else if (typeof obj === 'function') return flatten(obj(args), args);
         else if (isArrayLike(obj)) {
             let out = [];
             // we do a c style for loop here in case it's something
@@ -167,13 +170,27 @@ const MARKUP = (function () {
             if (m) ns[m[1] || ''] = flatten(attr[k], args);
         });
 
+        // detect the customized built-in element designator, if any,
+        // so it can be passed along as element creation options
+        let opts = null;
+        if ('is' in attr) {
+            let isv = flatten(attr['is'], args);
+            if (isv) opts = { is: isv };
+        }
+
         // create the element
         let elem = ns[pfx] ?
-            document.createElementNS(ns[pfx], tag) :
-            document.createElement(tag);
+            (opts ? document.createElementNS(ns[pfx], tag, opts) :
+             document.createElementNS(ns[pfx], tag)) :
+            (opts ? document.createElement(tag, opts) :
+             document.createElement(tag));
 
         Object.keys(attr).sort(sortAttr).forEach(function (k) {
             let value = flatten(attr[k], args);
+
+            // null and undefined attribute values cause the attribute
+            // to be omitted, as they do in the ruby version
+            if (value === undefined) return;
 
             let m = QNAME_RE.exec(k);
             if (!m) return;
@@ -301,7 +318,12 @@ const MARKUP = (function () {
         }
         else if (spec instanceof Node) {
             // do this here because all nodes are objects
-            return ADJACENT[adj](node.cloneNode(true), node);
+            return ADJACENT[adj](spec.cloneNode(true), node);
+        }
+        // null and undefined specs produce nothing; the ruby version
+        // omits nil values and we follow suit here
+        else if (spec === null || typeof spec === 'undefined') {
+            return node;
         }
         // XXX we need a better test than this
         else if (typeof spec === 'object') {
@@ -383,3 +405,6 @@ const MARKUP = (function () {
 
     return MARKUP;
 })();
+
+export default MARKUP;
+export { MARKUP };

@@ -1,0 +1,36 @@
+{
+  "name": "markup-mixup",
+  "version": "1.0.0",
+  "description": "A sensible, terse HTML/XML markup generator",
+  "keywords": [
+    "markup",
+    "html",
+    "xml",
+    "generator",
+    "dom"
+  ],
+  "homepage": "https://github.com/doriantaylor/js-markup-mixup#readme",
+  "bugs": {
+    "url": "https://github.com/doriantaylor/js-markup-mixup/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doriantaylor/js-markup-mixup.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Dorian Taylor",
+  "type": "module",
+  "main": "markup-mixup.js",
+  "exports": {
+    ".": "./markup-mixup.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  }
+}
