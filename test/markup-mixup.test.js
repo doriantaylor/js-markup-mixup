@@ -118,6 +118,25 @@ test('callbacks receive args', () => {
   assert.equal(el.getAttribute('id'), 'id-007');
 });
 
+test('attribute callbacks bind this to the first arg', () => {
+  const ctx = { marker: 'context-here' };
+  const out = MARKUP({ parent: document.body, spec: {
+    '#div': 'x',
+    class: function () { return 'ctx-' + this.marker; },
+  }, args: [ctx] });
+
+  assert.equal(out.parentNode.getAttribute('class'), 'ctx-context-here');
+});
+
+test('spec-body callbacks bind this to the first arg', () => {
+  const ctx = { name: 'world' };
+  const out = MARKUP({ parent: document.body, spec: {
+    '#div': function () { return 'hello ' + this.name; },
+  }, args: [ctx] });
+
+  assert.equal(out.parentNode.textContent, 'hello world');
+});
+
 test('callback as spec body', () => {
   // note: spec-level callbacks receive args spread across parameters
   const out = MARKUP({ parent: document.body, spec: {

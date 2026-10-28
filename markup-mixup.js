@@ -127,7 +127,8 @@ const flatten = function (obj, args, kv) {
     // functions have no own keys, so this check has to happen
     // before the empty-object check below or callbacks will
     // never fire
-    if (typeof obj === 'function') return flatten(obj(args), args);
+    if (typeof obj === 'function') return flatten(
+        obj.call(args && args[0], args), args);
     if (isAtom(obj) || Object.keys(obj).length === 0) return obj.toString();
     else if (isArrayLike(obj)) {
         let out = [];
@@ -311,7 +312,11 @@ export default function MARKUP (parent, spec, args) {
         return ADJACENT[adj](frag, node);
     }
     else if (typeof spec === 'function') {
-        let tmp = { spec: spec.apply(this, args), doc: doc, args: args };
+        // bind the receiver to the first arg, same as flatten(),
+        // so callbacks can address the caller's context object.
+        let tmp = {
+            spec: spec.apply(args && args[0], args),
+            doc: doc, args: args };
         tmp[adj] = node;
         return MARKUP(tmp);
     }
