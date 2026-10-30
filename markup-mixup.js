@@ -184,12 +184,20 @@ const ELEMENT = function (tag, doc, ns, attr, args) {
         if (isv) opts = { is: isv };
     }
 
-    // create the element
+    // create the element. when the prefix is bound (including the
+    // empty prefix, bound by an xmlns default declaration), the
+    // element is created in that namespace; otherwise it is
+    // created namespace-less IN THE TARGET DOCUMENT — the global
+    // document would relocate it into the host document's XHTML
+    // namespace and leave it in the wrong document. note an empty
+    // xmlns declaration (xmlns='') binds the empty prefix to no
+    // namespace via the falsy-string trick: ns[''] === '' keeps
+    // the element namespace-less by construction
     let elem = ns[pfx] ?
-        (opts ? document.createElementNS(ns[pfx], tag, opts) :
-         document.createElementNS(ns[pfx], tag)) :
-        (opts ? document.createElement(tag, opts) :
-         document.createElement(tag));
+        (opts ? doc.createElementNS(ns[pfx], tag, opts) :
+         doc.createElementNS(ns[pfx], tag)) :
+        (opts ? doc.createElement(tag, opts) :
+         doc.createElement(tag));
 
     Object.keys(attr).sort(sortAttr).forEach(function (k) {
         let value = flatten(attr[k], args);

@@ -233,6 +233,54 @@ test('namespaced element via xmlns attribute', () => {
   assert.equal(el.getAttribute('xmlns'), 'http://www.w3.org/2000/svg');
 });
 
+test('unprefixed #tag elements are created in the target document', () => {
+  // regression: ELEMENT fell back to the GLOBAL document for an
+  // unbound prefix, relocating the element into the host
+  // document's XHTML namespace (and creating it in the wrong
+  // document; the DOM silently adopts on append, masking that
+  // half). an #tag element with no xmlns must land namespace-less
+  // in the document being built into
+  const doc = document.implementation.createDocument(null, 'root');
+  const out = MARKUP({ parent: doc.documentElement, doc: doc,
+    spec: { '#tag': ['section'], id: 's1' } });
+
+  assert.equal(out.localName, 'section');
+  assert.equal(out.namespaceURI, null);
+  assert.equal(out.ownerDocument, doc);
+  assert.equal(out.getAttribute('id'), 's1');
+});
+
+test('ordinary elements in an xml document stay namespace-less', () => {
+  // the non-#tag face of the same regression: a plain element
+  // spec in an xml document must not gain the host document's
+  // XHTML namespace
+  const doc = document.implementation.createDocument(null, 'root');
+  const out = MARKUP({ parent: doc.documentElement, doc: doc,
+    spec: { '#entry': 'value' } });
+
+  const el = out.parentNode;
+  assert.equal(el.localName, 'entry');
+  assert.equal(el.namespaceURI, null);
+  assert.equal(el.ownerDocument, doc);
+});
+
+test('prefixed #tag elements honour the bound namespace', () => {
+  // guard the namespaced side of the #tag path against the
+  // fallback fix. the first child of a #tag designator is the
+  // tag string; further children are its content
+  const doc = document.implementation.createDocument(null, 'root');
+  const out = MARKUP({ parent: doc.documentElement, doc: doc, spec: {
+    '#tag': ['x:note', 'body'],
+    'xmlns:x': 'urn:example:x' } });
+
+  assert.equal(out.nodeType, 3);
+  const el = out.parentNode;
+  assert.equal(el.nodeName, 'x:note');
+  assert.equal(el.namespaceURI, 'urn:example:x');
+  assert.equal(el.ownerDocument, doc);
+  assert.equal(el.textContent, 'body');
+});
+
 test('empty children array yields an empty element', () => {
   const out = MARKUP({ parent: document.body, spec: { '#div': null } });
   assert.equal(out.localName, 'div');
