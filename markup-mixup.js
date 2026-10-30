@@ -129,7 +129,13 @@ const flatten = function (obj, args, kv) {
     // never fire
     if (typeof obj === 'function') return flatten(
         obj.call(args && args[0], args), args);
-    if (isAtom(obj) || Object.keys(obj).length === 0) return obj.toString();
+    // an object with no keys flattens to the empty string, not
+    // to '[object Object]' (the atom branch below stringifies;
+    // an empty object is not an atom)
+    if (obj && typeof obj === 'object' &&
+        !isArrayLike(obj) && Object.keys(obj).length === 0)
+        return '';
+    if (isAtom(obj)) return obj.toString();
     else if (isArrayLike(obj)) {
         let out = [];
         // we do a c style for loop here in case it's something

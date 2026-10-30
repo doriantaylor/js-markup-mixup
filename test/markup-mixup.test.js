@@ -90,6 +90,27 @@ test('generates processing instructions (xml document)', () => {
   assert.match(out.data, /data/);
 });
 
+test('processing instruction with no attributes carries clean data', () => {
+  // regression: flatten() stringified the empty attrs object to
+  // '[object Object]', so a bare [target, data] PI gained the
+  // garbage prefix
+  const doc = document.implementation.createDocument(null, 'root');
+  const out = MARKUP({ parent: doc.documentElement, doc: doc, spec: {
+    '#processing-instruction': ['target', 'data'] } });
+
+  assert.equal(out.nodeType, 7);
+  assert.equal(out.target, 'target');
+  assert.equal(out.data, 'data');
+});
+
+test('flatten of an empty object yields the empty string', () => {
+  // the attribute-side face of the same regression: an empty
+  // object attribute value is '' rather than '[object Object]'
+  const out = MARKUP({ parent: document.body, spec: {
+    '#div': 'x', opts: {} } });
+  assert.equal(out.parentNode.getAttribute('opts'), '');
+});
+
 test('flattens array attribute values', () => {
   const out = MARKUP({ parent: document.body, spec: {
     '#div': 'content', classes: ['a', 'b', 'c'] } });
