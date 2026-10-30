@@ -103,6 +103,13 @@ test('processing instruction with no attributes carries clean data', () => {
   assert.equal(out.data, 'data');
 });
 
+test('a processing instruction without a target throws', () => {
+  const doc = document.implementation.createDocument(null, 'root');
+  assert.throws(() =>
+    MARKUP({ parent: doc.documentElement, doc: doc,
+      spec: { '#pi': [] } }), TypeError);
+});
+
 test('flatten of an empty object yields the empty string', () => {
   // the attribute-side face of the same regression: an empty
   // object attribute value is '' rather than '[object Object]'

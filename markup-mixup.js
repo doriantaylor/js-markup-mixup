@@ -394,7 +394,8 @@ export default function MARKUP (parent, spec, args) {
         // processing instruction
         else if (name === '#pi' || name === '#processing-instruction') {
             let target = children.shift();
-            if (!target) throw 'Processing instrucitons need a target';
+            if (!target) throw new TypeError(
+                'a processing instruction requires a target');
             let data = (flatten(attrs, args, '=')
                         + ' ' + flatten(children, args)).trim();
 
@@ -420,3 +421,5 @@ export default function MARKUP (parent, spec, args) {
         return ADJACENT[adj](doc.createTextNode(spec.toString()), node);
     }
 }
+
+export { MARKUP };
